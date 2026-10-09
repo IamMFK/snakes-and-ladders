@@ -1,0 +1,16 @@
+# سیستم‌عامل ویندوز
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# فایل‌های ادیتورها
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# لاگ‌ها
+*.log

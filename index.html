@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مار و پله</title>
+<style>
+:root{--ink:#243447;--muted:#718096;--paper:#fbfaf6;--line:#e5e8e6;--teal:#397d78;--gold:#e8b85b;--cell:10%;--board:min(92vw,62vh);font-family:Tahoma,"Segoe UI",sans-serif;color:var(--ink);background:var(--paper)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0,#fff 0%,var(--paper) 70%);display:flex;justify-content:center;padding:clamp(12px,3vw,32px)}button{font:inherit} .app{width:min(1180px,100%);display:flex;flex-direction:column;align-items:center;gap:16px}
+header{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px}h1{font-size:clamp(1.35rem,3vw,2rem);margin:0;color:#315c5a}header p{color:var(--muted);margin:5px 0 0;font-size:.9rem}.new-game{border:1px solid #d8e2df;background:white;color:#406c68;border-radius:12px;padding:9px 14px;cursor:pointer}.new-game:hover{background:#f0f7f5}
+main{width:100%;display:flex;align-items:flex-start;justify-content:center;gap:clamp(14px,3vw,34px)}.board-wrap{position:relative;width:var(--board);height:var(--board);flex:none;border:5px solid white;border-radius:14px;box-shadow:0 10px 28px #33415520;overflow:hidden;background:#f5f1e7;touch-action:manipulation}.grid{position:absolute;inset:0;display:grid;direction:ltr;grid-auto-flow:row;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr)}.cell{position:relative;border:1px solid #e4dfd3;background:#fffdf7}.cell:nth-child(4n+1),.cell:nth-child(4n){background:#f3f6ed}.cell-num{position:absolute;top:3px;left:4px;color:#87918a;font-size:clamp(7px,1.15vw,12px);direction:ltr}.cell.start{background:#e5f2df}.cell.finish{background:#fff0cb}.cell.start:after,.cell.finish:after{position:absolute;right:3px;bottom:2px;font-size:clamp(7px,1vw,11px);color:#477a57}.cell.start:after{content:'شروع'}.cell.finish:after{content:'پایان'}
+.paths{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}.snake-body{fill:none;stroke-width:1.08;stroke-linecap:round;opacity:.92}.snake-head{stroke:white;stroke-width:.18}.snake-eye{fill:white}.ladder-rail{stroke:#b17b43;stroke-width:.58;stroke-linecap:round}.ladder-rung{stroke:#c4935b;stroke-width:.38;stroke-linecap:round}.token-layer{position:absolute;inset:0;pointer-events:none}.token{position:absolute;width:clamp(14px,2.3vw,25px);height:clamp(14px,2.3vw,25px);border-radius:50%;border:2px solid white;box-shadow:0 2px 5px #26323866;transform:translate(-50%,-50%);transition:left .22s ease,top .22s ease;z-index:3}.token-label{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:clamp(7px,1vw,11px);font-weight:bold;color:white;text-shadow:0 1px 2px #000}
+.side{width:min(290px,28vw);min-width:225px;display:flex;flex-direction:column;gap:12px}.panel{background:#fff;border:1px solid #e8e9e5;border-radius:16px;padding:15px;box-shadow:0 4px 14px #3341550b}.turn-label{font-size:.83rem;color:var(--muted);margin-bottom:9px}.turn-name{font-weight:bold;font-size:1.12rem;color:#315c5a}.turn-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.dice-area{display:flex;align-items:center;gap:18px;margin-top:14px}.dice-scene{width:58px;height:58px;perspective:300px;flex:none}.die{width:54px;height:54px;position:relative;transform-style:preserve-3d;transform:translateZ(-27px) rotateX(-20deg) rotateY(-30deg);transition:transform .6s cubic-bezier(.2,.7,.2,1)}.die.rolling{animation:roll .55s ease-in-out infinite alternate}@keyframes roll{to{transform:translateZ(-27px) rotateX(210deg) rotateY(230deg)}}.face{position:absolute;width:54px;height:54px;background:#fff;border:1px solid #d9dfdf;border-radius:10px;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:8px;gap:2px;box-shadow:inset 0 0 8px #82909618}.front{transform:rotateY(0deg) translateZ(27px)}.back{transform:rotateY(180deg) translateZ(27px)}.right{transform:rotateY(90deg) translateZ(27px)}.left{transform:rotateY(-90deg) translateZ(27px)}.top{transform:rotateX(90deg) translateZ(27px)}.bottom{transform:rotateX(-90deg) translateZ(27px)}.pip{border-radius:50%;background:#397d78;visibility:hidden}.pip.on{visibility:visible}.dice-number{font-size:.82rem;color:var(--muted);min-height:1.4em}.roll-btn{flex:1;border:0;border-radius:12px;background:#397d78;color:#fff;font-weight:bold;padding:11px 12px;cursor:pointer;transition:background .2s,transform .15s}.roll-btn:hover:not(:disabled){background:#2d6965;transform:translateY(-1px)}.roll-btn:disabled{opacity:.5;cursor:not-allowed}.players{padding:14px 15px}.players h2{font-size:1rem;margin:0 0 10px}.player-list{display:flex;flex-direction:column;gap:8px}.player{display:flex;align-items:center;gap:9px;border:1px solid transparent;border-radius:10px;padding:8px}.player.active{background:#eef6f3;border-color:#d9e9e4}.player-dot{width:13px;height:13px;border-radius:50%;flex:none}.player-info{flex:1;min-width:0}.player-name{font-size:.9rem}.player-pos{font-size:.75rem;color:var(--muted);margin-top:3px}.active-tag{font-size:.7rem;color:#397d78}.hint{color:var(--muted);font-size:.78rem;line-height:1.8;margin:0}.log{min-height:42px;font-size:.82rem;line-height:1.7;color:#53636b}
+.overlay{position:fixed;inset:0;background:#1d2e34a8;z-index:20;display:flex;align-items:center;justify-content:center;padding:18px}.modal{width:min(390px,100%);background:#fff;border-radius:20px;padding:25px;box-shadow:0 20px 60px #0003;text-align:center}.modal h2{margin:0 0 8px;color:#315c5a}.modal p{color:var(--muted);font-size:.9rem;line-height:1.8;margin:0 0 18px}.count-options{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0 20px}.count-option{border:1px solid #dce4e0;background:white;border-radius:12px;padding:12px 5px;color:#385c58;cursor:pointer}.count-option.selected{background:#e8f3ef;border-color:#6ca69a;box-shadow:0 0 0 2px #6ca69a22}.count-option strong{display:block;font-size:1.2rem}.start-btn{width:100%;border:0;background:#397d78;color:white;border-radius:12px;padding:12px;font-weight:bold;cursor:pointer}.hidden{display:none!important}.win-modal{position:relative;overflow:hidden}.win-modal h2{font-size:1.5rem}.confetti{position:absolute;top:-12px;width:9px;height:15px;border-radius:2px;animation:fall 2.8s linear forwards;z-index:2}@keyframes fall{to{transform:translateY(460px) rotate(720deg);opacity:.1}}.win-message{position:relative;z-index:3;padding:15px 0}
+@media(max-width:760px){:root{--board:min(92vw,62vh)}main{flex-direction:column;align-items:center}.side{width:var(--board);min-width:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}.players{grid-column:1/-1}.player-list{flex-direction:row;flex-wrap:wrap}.player{flex:1 1 42%;}.panel{padding:12px}.hint-panel{grid-column:1/-1}header{align-items:flex-start}.new-game{white-space:nowrap;font-size:.82rem}.cell-num{font-size:clamp(7px,2.2vw,11px)}}
+@media(max-height:650px) and (min-width:761px){:root{--board:min(83vh,58vw)}}
+/* Narrow-screen sizing: keep the square board and every control inside the viewport. */
+@media(max-width:600px){
+:root{--board:min(94vw,56vh)}
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+body{min-height:100vh;min-height:100dvh;padding:10px 10px 18px}
+.app{gap:12px}header{gap:8px}header p{font-size:.78rem;line-height:1.5}.new-game{min-height:44px;padding:8px 10px}
+main{width:100%;gap:12px}.board-wrap{max-width:100%;touch-action:pan-y}
+.side{width:var(--board);max-width:100%;gap:8px}.panel{padding:10px}.roll-btn,.start-btn,.count-option{min-height:44px}.count-option{padding:8px 4px}.dice-area{gap:10px}.paths{overflow:hidden}
+}
+@media(max-width:360px){:root{--board:min(93vw,52vh)}.side{grid-template-columns:1fr}.players,.hint-panel{grid-column:auto}.player-list{flex-direction:column}.player{flex:auto}}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;pointer-events:auto}.count-option strong,.count-option *{pointer-events:none}button,.count-options,.modal,.overlay{user-select:none;-webkit-user-select:none;touch-action:manipulation}
+
+/* ===== Modern playful cartoon redesign ===== */
+:root{
+  --ink:#263354;--muted:#78839d;--paper:#f4f7ff;--line:#e1e8fb;
+  --teal:#5b63e6;--gold:#ffbf47;--cell:10%;--board:min(92vw,62vh);
+  font-family:Tahoma,"Segoe UI",sans-serif;color:var(--ink);
+  background:#f4f7ff;
+}
+body{
+  background:radial-gradient(ellipse at 12% 8%,#fff4d6 0,transparent 28%),
+             radial-gradient(ellipse at 90% 18%,#dff8f4 0,transparent 30%),
+             linear-gradient(145deg,#f7f8ff 0%,#eef4ff 52%,#fff7ed 100%);
+}
+.app{gap:20px}
+header{padding:4px 2px 8px}
+h1{color:#343d85;letter-spacing:-.5px;font-weight:900;text-shadow:0 2px 0 #fff}
+header p{color:#737e9b;font-weight:500}
+.new-game{border:0;background:linear-gradient(135deg,#fff,#f4f2ff);color:#514cc2;border-radius:15px;padding:11px 17px;font-weight:bold;box-shadow:0 5px 0 #dcdcf7,0 8px 18px #5b63e61b;transition:transform .18s,box-shadow .18s}
+.new-game:hover{background:#fff;transform:translateY(-2px);box-shadow:0 7px 0 #dcdcf7,0 12px 20px #5b63e622}
+.board-wrap{
+  border:7px solid #fff;border-radius:25px;
+  background:linear-gradient(135deg,#8de8d8,#b9b8ff 52%,#ffdb8a);
+  box-shadow:0 9px 0 #d6def6,0 18px 38px #3f4e8a25,inset 0 0 0 2px #ffffffaa;
+}
+.grid{inset:6px;gap:3px;grid-template-columns:repeat(10,minmax(0,1fr));grid-template-rows:repeat(10,minmax(0,1fr))}
+.cell{border:1px solid #ffffffc9;border-radius:7px;background:#fff9e9;box-shadow:inset 0 -2px 0 #e8dfc8aa;overflow:hidden;transition:filter .15s}
+.cell:nth-child(8n+1),.cell:nth-child(8n+4){background:#e5f8ed}
+.cell:nth-child(8n+2),.cell:nth-child(8n+7){background:#e8efff}
+.cell:nth-child(8n+3),.cell:nth-child(8n+6){background:#fff0e8}
+.cell:nth-child(8n+5),.cell:nth-child(8n){background:#fff7cf}
+.cell-num{top:4px;left:5px;color:#59647d;font-weight:800;font-size:clamp(8px,1.15vw,12px);text-shadow:0 1px #fff}
+.cell.start{background:linear-gradient(145deg,#c8f7d5,#8fe9b5)!important;box-shadow:inset 0 -3px 0 #64c993}
+.cell.finish{background:linear-gradient(145deg,#fff0a9,#ffc85c)!important;box-shadow:inset 0 -3px 0 #efa83a}
+.cell.start:after,.cell.finish:after{font-weight:900;font-size:clamp(7px,1vw,11px);text-shadow:0 1px #fff9}
+.paths{inset:6px;width:calc(100% - 12px);height:calc(100% - 12px);filter:drop-shadow(0 1px 1px #fff9)}
+.snake-body{stroke-width:1.55;opacity:1}
+.snake-head{stroke-width:.28}
+.ladder-rail{stroke:#a56a2e;stroke-width:.72}
+.ladder-rung{stroke:#f4bd62;stroke-width:.5}
+.token{width:clamp(17px,2.6vw,28px);height:clamp(17px,2.6vw,28px);border:3px solid #fff;box-shadow:0 3px 0 #2633542b,0 5px 9px #26335430;transition:left .28s cubic-bezier(.2,.8,.2,1),top .28s cubic-bezier(.2,.8,.2,1),transform .2s}
+.token-label{font-size:clamp(8px,1vw,12px);text-shadow:0 1px 3px #17203c}
+.side{gap:14px}
+.panel{background:linear-gradient(145deg,#fff 0%,#fbfcff 100%);border:1px solid #e4e9fa;border-radius:20px;padding:17px;box-shadow:0 6px 0 #e5e9f8,0 12px 24px #34416e0b}
+.turn-label{color:#858eaa;font-weight:700;letter-spacing:.2px}
+.turn-name{color:#3d438d;font-size:1.18rem}
+.dice-area{gap:16px}
+.dice-scene{width:64px;height:64px}
+.die{transform:translateZ(-27px) rotateX(-20deg) rotateY(-30deg)}
+.face{background:linear-gradient(145deg,#fff,#f0f3ff);border:1px solid #dce2fb;border-radius:12px;box-shadow:inset 0 -3px 0 #e2e7f6,0 2px 4px #34416e12}
+.pip{background:#5b63e6}
+.roll-btn{background:linear-gradient(135deg,#6b72f2,#514cc8);border-radius:15px;padding:13px 12px;box-shadow:0 5px 0 #3e3ba5,0 8px 14px #514cc826;font-weight:900;transition:filter .2s,transform .15s,box-shadow .15s}
+.roll-btn:hover:not(:disabled){background:linear-gradient(135deg,#777df8,#5c56d7);transform:translateY(-2px);box-shadow:0 7px 0 #3e3ba5,0 12px 18px #514cc82b}
+.roll-btn:active:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 #3e3ba5}
+.roll-btn:disabled{box-shadow:none}
+.players h2{color:#3d438d;font-size:1.02rem}
+.player{border-radius:13px;padding:9px;border-color:#edf0fc;background:#fff;transition:background .2s,border-color .2s}
+.player.active{background:#eeefff;border-color:#c9caff;box-shadow:inset 3px 0 0 #686cf0}
+.player-dot{width:15px;height:15px;border:2px solid white;box-shadow:0 1px 4px #26335433}
+.player-name{font-weight:700;color:#38415f}
+.player-pos{color:#818ba6}
+.active-tag{background:#dedfff;color:#4b4ac0;border-radius:7px;padding:3px 7px;font-weight:800}
+.hint{color:#737e9b;line-height:1.9}
+.log{color:#4e5c7e;font-weight:600}
+.overlay{background:rgba(39,47,92,.56);backdrop-filter:blur(8px)}
+.modal{background:linear-gradient(150deg,#fff 0%,#f6f7ff 100%);border:2px solid #fff;border-radius:27px;padding:28px;box-shadow:0 12px 0 #bfc5eb,0 28px 70px #20295144}
+.modal h2{color:#4146a0;font-weight:900}
+.modal p{color:#747f9d}
+.count-option{border:2px solid #e5e8fb;background:#fff;border-radius:15px;color:#505b88;box-shadow:0 3px 0 #e7e9f8;transition:transform .15s,border-color .15s,background .15s}
+.count-option:hover{transform:translateY(-2px)}
+.count-option.selected{background:linear-gradient(145deg,#eeeeff,#dfe2ff);border-color:#7778ef;box-shadow:0 3px 0 #c1c3f5,0 0 0 3px #7778ef20;color:#4143a7}
+.count-option strong{color:inherit}
+.start-btn{background:linear-gradient(135deg,#6b72f2,#514cc8);border-radius:15px;padding:14px;font-weight:900;box-shadow:0 5px 0 #3e3ba5,0 8px 15px #514cc826;transition:transform .15s,filter .15s}
+.start-btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.start-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #3e3ba5}
+.win-modal{background:linear-gradient(145deg,#fffdf4,#f4f5ff)}
+.confetti{border-radius:4px}
+@media(max-width:760px){
+ .app{gap:15px}.board-wrap{border-width:5px;border-radius:19px}.grid{inset:4px;gap:2px}.paths{inset:4px;width:calc(100% - 8px);height:calc(100% - 8px)}
+ .side{gap:10px}.panel{border-radius:16px;padding:12px;grid-column: 1/-1;  }.roll-btn{padding:12px 8px}.modal{border-radius:22px;padding:22px}
+}
+@media(max-width:600px){
+ .board-wrap{border-radius:17px}.grid{gap:1.5px}.cell{border-radius:4px}.cell-num{top:2px;left:3px}.token{border-width:2px}
+ header p{max-width:260px}.panel{box-shadow:0 4px 0 #e5e9f8,0 8px 16px #34416e0b}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header><div><h1>🐍 مار و پله</h1><p>تاس بینداز، از نردبان بالا برو و به خانهٔ ۱۰۰ برس!</p></div><button class="new-game" id="restartBtn">بازی تازه</button></header>
+<main>
+<div class="board-wrap" aria-label="صفحهٔ بازی مار و پله"><div class="grid" id="grid"></div><svg class="paths" id="paths" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg><div class="token-layer" id="tokens"></div></div>
+<aside class="side">
+<section class="panel"><div class="turn-label">نوبت بازی</div><div class="turn-row"><div class="turn-name" id="turnName">—</div></div><div class="dice-area"><div class="dice-scene"><div class="die" id="die"></div></div><button class="roll-btn" id="rollBtn">انداختن تاس</button></div><div class="dice-number" id="diceText">برای شروع تاس بیندازید</div></section>
+<section class="panel players"><h2>بازیکنان</h2><div class="player-list" id="playerList"></div></section>
+<section class="panel hint-panel"><p class="hint">برای برد باید دقیقاً به خانهٔ ۱۰۰ برسید. با تاس ۶ یک نوبت اضافه می‌گیرید.</p></section>
+<section class="panel"><div class="turn-label">گزارش بازی</div><div class="log" id="gameLog">منتظر شروع بازی…</div></section>
+</aside>
+</main></div>
+<div class="overlay" id="startOverlay"><div class="modal"><h2>شروع بازی</h2><p>تعداد بازیکنان را انتخاب کنید. اگر یک نفره بازی می‌کنید، رایانه هم وارد رقابت می‌شود.</p><div class="count-options" id="countOptions"><button class="count-option selected" data-count="1"><strong>۱</strong>نفره</button><button class="count-option" data-count="2"><strong>۲</strong>نفر</button><button class="count-option" data-count="3"><strong>۳</strong>نفر</button><button class="count-option" data-count="4"><strong>۴</strong>نفر</button></div><button class="start-btn" id="startBtn">شروع بازی</button></div></div>
+<div class="overlay hidden" id="winnerOverlay"><div class="modal win-modal" id="winModal"><div class="win-message"><h2 id="winnerTitle">برنده!</h2><p id="winnerText"></p><button class="start-btn" id="playAgainBtn">بازی دوباره</button></div></div></div>
+<script>
+'use strict';
+// وضعیت و قواعد بازی از نمایش جدا نگه داشته شده‌اند.
+const SNAKES={27:5,40:3,43:18,54:31,66:45,76:58,89:53,99:41};
+const LADDERS={4:25,13:46,33:49,42:63,50:69,62:81,74:92};
+const COLORS=['#d56c60','#4b8f84','#e1a640','#687fba'];
+const state={players:[],current:0,busy:false,selectedCount:1,finished:false};
+const $=id=>document.getElementById(id);
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+function toFa(value){return String(value).replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]);}
+// Conventional board: bottom row 1..10 left-to-right, then 20..11 alternating upward; top row 100..91.
+function cellXY(n){const row=Math.floor((n-1)/10), offset=(n-1)%10;const col=row%2===0?offset:9-offset;return{x:col*10+5,y:95-row*10};}
+function cellElement(n){return $('cell-'+n)}
+function buildBoard(){const grid=$('grid');for(let n=1;n<=100;n++){const cell=document.createElement('div');cell.className='cell'+(n===1?' start':'')+(n===100?' finish':'');cell.id='cell-'+n;const pos=cellXY(n);cell.style.gridColumn=String(Math.floor(pos.x/10)+1);cell.style.gridRow=String(Math.floor(pos.y/10)+1);cell.innerHTML='<span class="cell-num">'+toFa(n)+'</span>';grid.appendChild(cell);}drawPaths();buildDice();}
+function drawPaths(){const svg=$('paths');let out='';for(const [from,to] of Object.entries(SNAKES)){const a=cellXY(+from),b=cellXY(to),dx=b.x-a.x,dy=b.y-a.y;const mx=(a.x+b.x)/2+dy*.22,my=(a.y+b.y)/2-dx*.2;const color='#c96f64',angle=Math.atan2(my-a.y,mx-a.x)*180/Math.PI;const d=`M ${a.x} ${a.y} Q ${mx} ${my} ${b.x} ${b.y}`;out+=`<path class="snake-body" stroke="${color}" stroke-width="1.65" d="${d}"/><path d="${d}" fill="none" stroke="#f1b2a0" stroke-width=".22" stroke-linecap="round" opacity=".8"/><g transform="translate(${a.x} ${a.y}) rotate(${angle})"><ellipse class="snake-head" cx="0" cy="0" rx="1.8" ry="1.25" fill="${color}"/><ellipse cx=".55" cy="-.43" rx=".34" ry=".4" fill="#fff"/><ellipse cx=".55" cy=".43" rx=".34" ry=".4" fill="#fff"/><circle cx=".68" cy="-.43" r=".16" fill="#243447"/><circle cx=".68" cy=".43" r=".16" fill="#243447"/><path d="M 1.55 0 Q 2 .02 2.3 -.16 M 2 .02 L 2.32 .2" fill="none" stroke="#a94449" stroke-width=".12" stroke-linecap="round"/></g>`;}for(const [from,to] of Object.entries(LADDERS)){const a=cellXY(+from),b=cellXY(to),dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy),ox=-dy/len*1.35,oy=dx/len*1.35;for(const s of [-1,1])out+=`<line class="ladder-rail" x1="${a.x+ox*s}" y1="${a.y+oy*s}" x2="${b.x+ox*s}" y2="${b.y+oy*s}"/>`;const rungs=Math.max(2,Math.floor(len/3.4));for(let i=1;i<rungs;i++){const t=i/rungs,x=a.x+dx*t,y=a.y+dy*t;out+=`<line class="ladder-rung" x1="${x+ox}" y1="${y+oy}" x2="${x-ox}" y2="${y-oy}"/>`;}}svg.innerHTML=out;}
+function buildDice(){const die=$('die'),faces=[['front',1],['back',6],['right',3],['left',4],['top',2],['bottom',5]];for(const [name,num] of faces){const face=document.createElement('div');face.className='face '+name;for(let i=1;i<=9;i++){const pip=document.createElement('i');pip.className='pip';if([1,3,5,7,9].includes(i)&&num%2===1||[1,3,7,9].includes(i)&&num===2||[2,4,6,8].includes(i)&&num===4||i===5&&num===6||[2,8].includes(i)&&num===6)pip.classList.add('on');face.appendChild(pip);}die.appendChild(face);}}
+function render(){const list=$('playerList');list.innerHTML='';const stacks=new Map();state.players.forEach((p,i)=>{const key=Math.max(1,p.position);if(!stacks.has(key))stacks.set(key,[]);stacks.get(key).push(i);});const stackOffsets={1:[[0,0]],2:[[-2.35,0],[2.35,0]],3:[[-2.35,-1.8],[2.35,-1.8],[0,2.2]],4:[[-2.35,-2.1],[2.35,-2.1],[-2.35,2.1],[2.35,2.1]]};state.players.forEach((p,i)=>{let el=document.getElementById('token-'+p.id);if(!el){el=document.createElement('div');el.className='token';el.id='token-'+p.id;el.style.background=p.color;const label=document.createElement('span');label.className='token-label';label.textContent=toFa(i+1);el.appendChild(label);$('tokens').appendChild(el);}const pos=Math.max(1,p.position),at=cellXY(pos),stack=stacks.get(pos),delta=(stackOffsets[stack.length]||stackOffsets[4])[stack.indexOf(i)];el.style.left=(at.x+delta[0])+'%';el.style.top=(at.y+delta[1])+'%';const row=document.createElement('div');row.className='player'+(i===state.current&&!state.finished?' active':'');row.innerHTML=`<span class="player-dot" style="background:${p.color}"></span><div class="player-info"><div class="player-name">${p.name}${p.bot?' <small>(رایانه)</small>':''}</div><div class="player-pos">خانهٔ ${toFa(p.position)}</div></div>${i===state.current&&!state.finished?'<span class="active-tag">نوبت</span>':''}`;list.appendChild(row);});$('turnName').textContent=state.finished?'بازی تمام شد':state.players[state.current]?.name||'—';$('rollBtn').disabled=state.busy||state.finished||!!state.players[state.current]?.bot;}
+function setLog(text){$('gameLog').textContent=text;}
+function nextTurn(){if(state.finished)return;state.current=(state.current+1)%state.players.length;render();if(state.players[state.current].bot){setTimeout(()=>takeTurn(true),650);}}
+async function animateSteps(player,count){for(let i=0;i<count;i++){player.position++;render();await sleep(155);}}
+async function takeTurn(isBot=false){if(state.busy||state.finished)return;state.busy=true;render();const die=$('die'),btn=$('rollBtn');die.classList.add('rolling');btn.textContent=isBot?'رایانه در حال انداختن…':'تاس در حال چرخش…';await sleep(680);die.classList.remove('rolling');const roll=Math.floor(Math.random()*6)+1;const rotations={1:'rotateX(-20deg) rotateY(-30deg)',2:'rotateX(-110deg) rotateY(-30deg)',3:'rotateX(-20deg) rotateY(-120deg)',4:'rotateX(-20deg) rotateY(60deg)',5:'rotateX(70deg) rotateY(-30deg)',6:'rotateX(-20deg) rotateY(150deg)'};die.style.transform='translateZ(-27px) '+rotations[roll];const p=state.players[state.current],start=p.position,need=100-start;$('diceText').textContent='عدد تاس: '+toFa(roll);if(roll>need){setLog(`${p.name} عدد ${toFa(roll)} آورد؛ برای رسیدن به ۱۰۰ باید دقیقاً ${toFa(need)} می‌آمد. حرکت نمی‌کند.`);}else{await animateSteps(p,roll);setLog(`${p.name} ${toFa(roll)} خانه جلو رفت.`);if(p.position===100){state.finished=true;state.busy=false;btn.textContent='انداختن تاس';setLog(p.name+' برنده شد!');render();showWinner(p);return;}if(SNAKES[p.position]){const from=p.position,to=SNAKES[from];await sleep(300);p.position=to;render();setLog(`اوه! مار ${toFa(from)} ${p.name} را به خانهٔ ${toFa(to)} برگرداند.`);}else if(LADDERS[p.position]){const from=p.position,to=LADDERS[from];await sleep(300);p.position=to;render();setLog(`آفرین! نردبان ${toFa(from)} ${p.name} را به خانهٔ ${toFa(to)} رساند.`);}}const extra=roll===6;btn.textContent='انداختن تاس';state.busy=false;if(extra){setLog(isBot?'نوبت اضافهٔ رایانه؛ رایانه دوباره تاس می‌اندازد.':'شما عدد ۶ آوردید؛ یک نوبت اضافه!');render();if(p.bot)setTimeout(()=>takeTurn(true),650);}else{nextTurn();if(isBot)setLog('نوبت '+state.players[state.current].name+' است.');}}
+function showWinner(p){$('winnerTitle').textContent='🎉 '+p.name+' برنده شد!';$('winnerText').textContent='با رسیدن دقیق به خانهٔ ۱۰۰، بازی را برد.';$('winnerOverlay').classList.remove('hidden');makeConfetti();}
+function makeConfetti(){const modal=$('winModal');modal.querySelectorAll('.confetti').forEach(x=>x.remove());const colors=['#d56c60','#4b8f84','#e1a640','#687fba','#8abf8b'];for(let i=0;i<36;i++){const bit=document.createElement('i');bit.className='confetti';bit.style.left=(Math.random()*100)+'%';bit.style.background=colors[i%colors.length];bit.style.animationDelay=(Math.random()*.9)+'s';bit.style.transform=`rotate(${Math.random()*180}deg)`;modal.appendChild(bit);}}
+function startGame(count){$('startOverlay').classList.add('hidden');$('winnerOverlay').classList.add('hidden');document.querySelectorAll('.token').forEach(t=>t.remove());state.players=[];const humanCount=count===1?1:count;for(let i=0;i<humanCount;i++)state.players.push({id:i===0?'visibly':i,name:count===1?'شما':'بازیکن '+toFa(i+1),position:1,color:COLORS[i],bot:false});if(count===1)state.players.push({id:1,name:'رایانه',position:1,color:COLORS[1],bot:true});state.current=0;state.busy=false;state.finished=false;$('diceText').textContent='برای شروع تاس بیندازید';$('die').style.transform='translateZ(-27px) rotateX(-20deg) rotateY(-30deg)';setLog('بازی شروع شد؛ نوبت '+state.players[0].name+' است.');render();}
+/* ===== Mobile-first fast tap wiring =====
+   Uses pointerup (fires instantly on touch, no 300ms delay, no swallowed clicks)
+   and a short guard so the synthetic click after pointerup cannot cause a
+   second/double execution. Falls back to 'click' when Pointer Events are
+   unavailable. */
+const tapGuard={el:null,t:0};
+function onTap(el,handler){
+  if(!el)return;
+  const run=e=>{
+    const now=Date.now();
+    if(tapGuard.el===el&&now-tapGuard.t<600)return; // block ghost/double fire
+    tapGuard.el=el;tapGuard.t=now;
+    e.preventDefault();
+    handler(e);
+  };
+  if(window.PointerEvent){
+    el.addEventListener('pointerup',e=>{if(e.button===0||e.pointerType!=='mouse')run(e);});
+  }else{
+    el.addEventListener('touchend',run,{passive:false});
+    el.addEventListener('click',run);
+  }
+}
+onTap($('countOptions'),e=>{const button=e.target.closest('.count-option,[data-count]');if(!button)return;state.selectedCount=Number(button.dataset.count);document.querySelectorAll('.count-option').forEach(b=>b.classList.toggle('selected',b===button));});
+onTap($('startBtn'),()=>startGame(state.selectedCount));
+onTap($('rollBtn'),()=>takeTurn(false));
+onTap($('restartBtn'),()=>{$('startOverlay').classList.remove('hidden');$('winnerOverlay').classList.add('hidden');state.selectedCount=state.players.length===2&&state.players[1]?.bot?1:Math.max(2,state.players.length);document.querySelectorAll('.count-option').forEach(b=>b.classList.toggle('selected',Number(b.dataset.count)===state.selectedCount));});
+onTap($('playAgainBtn'),()=>{$('winnerOverlay').classList.add('hidden');$('startOverlay').classList.remove('hidden');});
+buildBoard();
+</script>
+</body>
+</html>
